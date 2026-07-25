@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo ADI | Sistema de Administración Digital Integral</title>
+    <style>
+        :root {
+            --fondo: #f4f6f9;
+            --oscuro: #1a1a2e;
+            --rojo: #e94560;
+            --blanco: #ffffff;
+            --gris-texto: #333;
+            --gris-claro: #e0e0e0;
+            --verde: #2ecc71;
+            --naranja: #f39c12;
+            --azul: #0f3460;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--fondo);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+            color: var(--gris-texto);
+        }
+
+        .contenedor {
+            background: var(--blanco);
+            width: 100%;
+            max-width: 700px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .encabezado {
+            background: var(--oscuro);
+            color: var(--blanco);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .encabezado .logo {
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--rojo);
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        .encabezado h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .encabezado p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 0.3rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: #fafafa;
+            border-bottom: 2px solid var(--gris-claro);
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 1rem 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            color: #888;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover { color: var(--oscuro); }
+        .tab.activa { color: var(--rojo); border-bottom-color: var(--rojo); }
+
+        .contenido { padding: 1.5rem; min-height: 350px; }
+
+        .panel { display: none; }
+        .panel.activo { display: block; }
+
+        .fila {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        input, select, button {
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--gris-claro);
+            font-size: 0.9rem;
+        }
+
+        input:focus, select:focus { outline: none; border-color: var(--rojo); }
+
+        .btn-sm {
+            background: var(--rojo);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-sm:hover { background: #d63852; }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--rojo);
+            color: var(--rojo);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-outline:hover { background: #fff0f0; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background: var(--oscuro);
+            color: white;
+            padding: 0.6rem;
+            text-align: left;
+        }
+
+        td {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--gris-claro);
+        }
+
+        .balance {
+            background: #f0f8ff;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: 600;
+        }
+
+        .indicador { font-size: 1.2rem; font-weight: 700; }
+        .verde { color: var(--verde); }
+        .rojo { color: var(--rojo); }
+
+        .cta {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gris-claro);
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .btn-whatsapp:hover { background: #1ebe57; }
+
+        @media (max-width: 500px) {
+            .fila { flex-direction: column; align-items: stretch; }
+            .tab { font-size: 0.75rem; padding: 0.8rem 0.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="contenedor">
+    <div class="encabezado">
+        <div class="logo">ADI</div>
+        <h1>Sistema de Administración Digital Integral</h1>
+        <p>Simulador interactivo de control administrativo</p>
+    </div>
+
+    <div class="tabs">
+        <div class="tab activa" data-tab="efectivo">💰 Efectivo</div>
+        <div class="tab" data-tab="credito">📋 Crédito</div>
+        <div class="tab" data-tab="margen">📊 Margen</div>
+    </div>
+
+    <div class="contenido">
+
+        <div class="panel activo" id="panel-efectivo">
+            <h3>💰 Registro de Ingresos (Corte de Caja Inteligente)</h3>
+            <p style="color:#555;margin-bottom:1rem;">Simula cómo cada pago queda registrado por responsable. El balance se calcula automáticamente.</p>
+            <div class="fila">
+                <input type="number" id="monto" placeholder="Monto recibido" style="width:150px;">
+                <select id="responsable">
+                    <option value="">Responsable</option>
+                    <option>Ana</option>
+                    <option>Luis</option>
+                    <option>Marta</option>
+                </select>
+                <button class="btn-sm" onclick="agregarPago()">Registrar</button>
+            </div>
+            <table id="tabla-pagos">
+                <thead><tr><th>Monto</th><th>Responsable</th><th>Hora</th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <div class="balance">
+                Total recibido hoy: <span id="total-efectivo" class="indicador">$0</span>
+                <br><small style="color:#888;">Cada pago trazable. Si falta dinero, sabrás exactamente quién recibió qué.</small>
+            </div>
+        </div>
+
+        <div class="panel" id="panel-credito">
+            <h3>📋 Cuentas por Cobrar (Control de Crédito)</h3>
+            <p style="color:#555;margin-bottom:1rem;">Visualiza adeudos, pagos parciales y saldo pendiente. Sin libretas perdidas.</p>
+            <div class="fila">
+                <input type="text" id="nombre-cliente" placeholder="Nombre del cliente" style="width:180px;">
+                <input type="number" id="monto-credito" placeholder="Monto prestado" style="width:140px;">
+                <button class="btn-sm" onclick="agregarCredito()">Añadir</button>
+            </div>
+            <table id="tabla-creditos">
+                <thead><tr><th>Cliente</th><th>Total</th><th>Pagado</th><th>Saldo</th><th>Acción</th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <div class="balance">
+                Total pendiente de cobro: <span id="total-cobrar" class="indicador rojo">$0</span>
+                <br><small style="color:#888;">Sabrás exactamente cuánto y desde cuándo te deben.</small>
+            </div>
+        </div>
+
+        <div class="panel" id="panel-margen">
+            <h3>📊 Rentabilidad por Producto/Servicio</h3>
+            <p style="color:#555;margin-bottom:1rem;">Calcula el margen real de cada cosa que vendes. Toma decisiones con datos.</p>
+            <div class="fila">
+                <input type="text" id="nombre-producto" placeholder="Producto/Servicio" style="width:160px;">
+                <input type="number" id="costo" placeholder="Costo" style="width:100px;">
+                <input type="number" id="precio-venta" placeholder="Precio venta" style="width:100px;">
+                <button class="btn-sm" onclick="agregarProducto()">Calcular</button>
+            </div>
+            <table id="tabla-margenes">
+                <thead><tr><th>Producto</th><th>Costo</th><th>Precio</th><th>Margen %</th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <div class="balance">
+                Producto más rentable: <span id="mejor-producto" class="indicador verde">—</span>
+            </div>
+        </div>
+
+        <div class="cta">
+            <p style="margin-bottom:0.8rem;">¿Quieres este control en tu negocio?</p>
+            <a id="whatsapp-demo" href="#" target="_blank" class="btn-whatsapp">
+                📲 Quiero el Diagnóstico Completo ADI
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pagos = [];
+    let creditos = [];
+    let productos = [];
+
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('activa'));
+            tab.classList.add('activa');
+            const panelId = 'panel-' + tab.dataset.tab;
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('activo'));
+            document.getElementById(panelId).classList.add('activo');
+        });
+    });
+
+    function agregarPago() {
+        const monto = parseFloat(document.getElementById('monto').value);
+        const responsable = document.getElementById('responsable').value;
+        if (!monto || !responsable) { alert('Completa monto y responsable'); return; }
+        const ahora = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        pagos.push({ monto, responsable, hora: ahora });
+        document.getElementById('monto').value = '';
+        document.getElementById('responsable').value = '';
+        renderizarPagos();
+    }
+
+    function renderizarPagos() {
+        const tbody = document.querySelector('#tabla-pagos tbody');
+        tbody.innerHTML = pagos.map(p => `<tr><td>$${p.monto.toFixed(2)}</td><td>${p.responsable}</td><td>${p.hora}</td></tr>`).join('');
+        const total = pagos.reduce((s,p) => s + p.monto, 0);
+        document.getElementById('total-efectivo').textContent = '$' + total.toFixed(2);
+    }
+
+    function agregarCredito() {
+        const cliente = document.getElementById('nombre-cliente').value.trim();
+        const total = parseFloat(document.getElementById('monto-credito').value);
+        if (!cliente || !total) { alert('Completa nombre y monto'); return; }
+        creditos.push({ cliente, total, pagado: 0 });
+        document.getElementById('nombre-cliente').value = '';
+        document.getElementById('monto-credito').value = '';
+        renderizarCreditos();
+    }
+
+    function abonarCredito(index) {
+        const abono = parseFloat(prompt('Monto a abonar:'));
+        if (!abono || abono <= 0) return;
+        creditos[index].pagado += abono;
+        if (creditos[index].pagado > creditos[index].total) creditos[index].pagado = creditos[index].total;
+        renderizarCreditos();
+    }
+
+    function renderizarCreditos() {
+        const tbody = document.querySelector('#tabla-creditos tbody');
+        tbody.innerHTML = creditos.map((c, i) => {
+            const saldo = c.total - c.pagado;
+            return `<tr>
+                <td>${c.cliente}</td>
+                <td>$${c.total.toFixed(2)}</td>
+                <td>$${c.pagado.toFixed(2)}</td>
+                <td style="color:${saldo>0?'red':'green'}">$${saldo.toFixed(2)}</td>
+                <td><button class="btn-outline" onclick="abonarCredito(${i})">Abonar</button></td>
+            </tr>`;
+        }).join('');
+        const totalPendiente = creditos.reduce((s,c) => s + (c.total - c.pagado), 0);
+        document.getElementById('total-cobrar').textContent = '$' + totalPendiente.toFixed(2);
+    }
+
+    function agregarProducto() {
+        const nombre = document.getElementById('nombre-producto').value.trim();
+        const costo = parseFloat(document.getElementById('costo').value);
+        const precio = parseFloat(document.getElementById('precio-venta').value);
+        if (!nombre || !costo || !precio) { alert('Completa todos los campos'); return; }
+        const margen = ((precio - costo) / precio * 100).toFixed(1);
+        productos.push({ nombre, costo, precio, margen: parseFloat(margen) });
+        document.getElementById('nombre-producto').value = '';
+        document.getElementById('costo').value = '';
+        document.getElementById('precio-venta').value = '';
+        renderizarMargenes();
+    }
+
+    function renderizarMargenes() {
+        const tbody = document.querySelector('#tabla-margenes tbody');
+        tbody.innerHTML = productos.map(p => {
+            const colorMargen = p.margen > 50 ? 'green' : (p.margen > 30 ? 'orange' : 'red');
+            return `<tr>
+                <td>${p.nombre}</td>
+                <td>$${p.costo.toFixed(2)}</td>
+                <td>$${p.precio.toFixed(2)}</td>
+                <td style="color:${colorMargen};font-weight:600;">${p.margen}%</td>
+            </tr>`;
+        }).join('');
+
+        if (productos.length > 0) {
+            const mejor = productos.reduce((a,b) => a.margen > b.margen ? a : b);
+            document.getElementById('mejor-producto').textContent = mejor.nombre + ' (' + mejor.margen + '%)';
+        } else {
+            document.getElementById('mejor-producto').textContent = '—';
+        }
+    }
+
+    const numWA = '5214924102217';
+    const mensajeDemo = encodeURIComponent('Hola ADI, vi la demo del Sistema y quiero el Diagnóstico Completo para mi negocio.');
+    document.getElementById('whatsapp-demo').href = `https://wa.me/${numWA}?text=${mensajeDemo}`;
+</script>
+</body>
+</html>
