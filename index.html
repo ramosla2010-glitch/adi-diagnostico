@@ -230,6 +230,20 @@
             justify-content: center;
         }
 
+        input[type="text"] {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--gris-claro);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border 0.2s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--rojo);
+        }
+
         @media (max-width: 480px) {
             .encabezado h1 { font-size: 1.2rem; }
             .btn { padding: 0.7rem 1rem; font-size: 0.85rem; }
@@ -239,27 +253,41 @@
 <body>
 
     <div class="contenedor">
-        <!-- Encabezado -->
         <div class="encabezado">
             <div class="logo">ADI</div>
             <h1>¿Cuánto pierde tu negocio<br>sin que lo sepas?</h1>
             <p>Diagnóstico gratuito. 2 minutos. Sin pedirte cifras exactas.</p>
         </div>
 
-        <!-- Barra de progreso -->
         <div class="barra-progreso" id="barra">
-            <span class="paso activo" data-paso="0"></span>
+            <span class="paso activo" data-paso="-1"></span>
+            <span class="paso" data-paso="0"></span>
             <span class="paso" data-paso="1"></span>
             <span class="paso" data-paso="2"></span>
             <span class="paso" data-paso="3"></span>
             <span class="paso" data-paso="4"></span>
         </div>
 
-        <!-- Cuerpo -->
         <div class="cuerpo" id="cuerpo">
 
+            <!-- Pantalla -1: Nombre -->
+            <div class="pantalla activa" id="pantalla--1">
+                <h2>👋 Antes de empezar...</h2>
+                <p class="intro">Este diagnóstico te tomará 2 minutos. Solo necesito saber quién eres para personalizar tu resultado.</p>
+                <div style="margin: 1.5rem 0;">
+                    <label style="font-weight:600;display:block;margin-bottom:0.5rem;">Tu nombre o el de tu negocio</label>
+                    <input type="text" id="nombre-prospecto" placeholder="Ej. María López o Papelería Express">
+                </div>
+                <div class="botones">
+                    <button class="btn btn-primario" id="btn-nombre" onclick="siguienteDesdeNombre()" disabled>Continuar →</button>
+                </div>
+                <div class="confianza">
+                    🔒 Solo para dirigirme a ti correctamente. No comparto datos.
+                </div>
+            </div>
+
             <!-- Pantalla 0: Bienvenida -->
-            <div class="pantalla activa" id="pantalla-0">
+            <div class="pantalla" id="pantalla-0">
                 <h2>🧠 Tres fugas que drenan tu negocio en silencio</h2>
                 <p class="intro">El 80% de los negocios pierde dinero por procesos administrativos desordenados. Esta herramienta detecta tus puntos débiles sin pedirte cifras exactas.</p>
                 <p style="font-weight:600;margin-bottom:1rem;">Solo responde con honestidad. Sin números delicados.</p>
@@ -385,33 +413,42 @@
     </div>
 
     <script>
-        // Estado
         const estado = {
-            pasoActual: 0,
-            respuestas: {
-                fuga1: null,
-                fuga2: null,
-                fuga3: null
-            }
+            pasoActual: -1,
+            nombreProspecto: '',
+            respuestas: { fuga1: null, fuga2: null, fuga3: null }
         };
 
-        // Seleccionar opción
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputNombre = document.getElementById('nombre-prospecto');
+            const btnNombre = document.getElementById('btn-nombre');
+            if (inputNombre && btnNombre) {
+                inputNombre.addEventListener('input', function() {
+                    btnNombre.disabled = this.value.trim() === '';
+                });
+            }
+        });
+
+        function siguienteDesdeNombre() {
+            const nombre = document.getElementById('nombre-prospecto').value.trim();
+            if (!nombre) return;
+            estado.nombreProspecto = nombre;
+            cambiarPantalla(0);
+        }
+
         function seleccionarOpcion(elemento, paso, valor) {
             const pantalla = document.getElementById('pantalla-' + paso);
             pantalla.querySelectorAll('.opcion').forEach(op => op.classList.remove('seleccionada'));
             elemento.classList.add('seleccionada');
-
             if (paso === 1) estado.respuestas.fuga1 = valor;
             if (paso === 2) estado.respuestas.fuga2 = valor;
             if (paso === 3) estado.respuestas.fuga3 = valor;
-
             document.getElementById('btn-' + paso).disabled = false;
         }
 
         function siguiente(pasoDestino) {
-            // Validar selección
             const claves = [null, 'fuga1', 'fuga2', 'fuga3'];
-            if (estado.pasoActual !== 0) {
+            if (estado.pasoActual >= 1 && estado.pasoActual <= 3) {
                 if (!estado.respuestas[claves[estado.pasoActual]]) {
                     alert('Selecciona una opción antes de continuar.');
                     return;
@@ -420,9 +457,7 @@
             cambiarPantalla(pasoDestino);
         }
 
-        function anterior(pasoDestino) {
-            cambiarPantalla(pasoDestino);
-        }
+        function anterior(pasoDestino) { cambiarPantalla(pasoDestino); }
 
         function cambiarPantalla(nuevoPaso) {
             document.querySelector('.pantalla.activa').classList.remove('activa');
@@ -433,10 +468,11 @@
         }
 
         function actualizarBarra() {
-            document.querySelectorAll('.paso').forEach((paso, index) => {
+            document.querySelectorAll('.paso').forEach(paso => {
+                const pasoValor = parseInt(paso.dataset.paso);
                 paso.classList.remove('activo', 'completado');
-                if (index < estado.pasoActual) paso.classList.add('completado');
-                if (index === estado.pasoActual) paso.classList.add('activo');
+                if (pasoValor < estado.pasoActual) paso.classList.add('completado');
+                if (pasoValor === estado.pasoActual) paso.classList.add('activo');
             });
         }
 
@@ -446,7 +482,6 @@
             const detalles = [];
             const recomendaciones = [];
 
-            // Fuga 1
             if (r.fuga1 === 'alto') {
                 puntuacion += 3;
                 detalles.push('🔴 <strong>Efectivo:</strong> Alto riesgo. Sin trazabilidad, el faltante es inevitable.');
@@ -460,7 +495,6 @@
                 detalles.push('✅ <strong>Efectivo:</strong> Buen control. Aun así, revisemos si es eficiente.');
             }
 
-            // Fuga 2
             if (r.fuga2 === 'alto') {
                 puntuacion += 3;
                 detalles.push('🔴 <strong>Crédito:</strong> Alto riesgo. Sin registro formal, el dinero se evapora.');
@@ -474,7 +508,6 @@
                 detalles.push('✅ <strong>Crédito:</strong> Buen sistema. Verifiquemos que no tenga puntos ciegos.');
             }
 
-            // Fuga 3
             if (r.fuga3 === 'alto') {
                 puntuacion += 3;
                 detalles.push('🔴 <strong>Margen:</strong> Alto riesgo. Sin datos, no puedes decidir qué negocio hacer.');
@@ -488,7 +521,6 @@
                 detalles.push('✅ <strong>Margen:</strong> Buen conocimiento. ¿Lo tienes automatizado en tiempo real?');
             }
 
-            // Determinar nivel
             let nivelTexto = '';
             let nivelColor = '';
             let nivelEmoji = '';
@@ -530,11 +562,11 @@
                 <p style="text-align:center;color:#888;font-size:0.9rem;">En solo 2 sesiones, te entrego el plan de acción con tu Sistema de Administración Digital Integral.</p>
             `;
 
-            // WhatsApp link
+            const nombre = estado.nombreProspecto || 'Un prospecto';
             const mensajeWA = encodeURIComponent(
-                `Hola ADI, hice el Micro Diagnóstico. Mi nivel de riesgo es: ${nivelTexto}. Me interesa el Diagnóstico Completo de Administración Digital Integral.`
+                `Hola ADI, soy ${nombre}. Hice el Micro Diagnóstico. Mi nivel de riesgo es: ${nivelTexto}. Me interesa el Diagnóstico Completo de Administración Digital Integral.`
             );
-            const numWA = '5214941120439'; // ← CAMBIA POR TU NÚMERO
+            const numWA = '5214924102217';
             document.getElementById('whatsapp-link').href = `https://wa.me/${numWA}?text=${mensajeWA}`;
         }
     </script>
